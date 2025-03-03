@@ -155,23 +155,6 @@ function generateLogMessage(msg, type) {
 
 const startSock = async () => {
     try {
-        // Verifica se já existe uma instância rodando
-        const lockFile = path.join(process.cwd(), '.amanda.lock');
-        if (fs.existsSync(lockFile)) {
-            fileLogger.error('Já existe uma instância do bot rodando!');
-            process.exit(1);
-        }
-
-        // Cria arquivo de lock
-        fs.writeFileSync(lockFile, process.pid.toString());
-
-        // Remove arquivo de lock ao encerrar
-        process.on('exit', () => {
-            if (fs.existsSync(lockFile)) {
-                fs.unlinkSync(lockFile);
-            }
-        });
-
         const authFolder = 'baileys_auth_info';
         const { state, saveCreds } = await useMultiFileAuthState(authFolder).catch(err => {
             fileLogger.error('Erro ao carregar estado de autenticação:', err);
