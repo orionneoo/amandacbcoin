@@ -1,6 +1,7 @@
 import { proto } from '@whiskeysockets/baileys';
 import db from '../database';
 import { getRandomNumber } from '../utils/random';
+<<<<<<< HEAD
 
 const DAILY_COINS = 1000; // Recompensa diaria
 const MINING_CHANCES = 6; // Chance de minerar
@@ -170,6 +171,17 @@ async function handleSniper(sock: any, groupId: string, sender: string, userEcon
         });
     }
 }
+=======
+import { UserEconomy } from '../types/database';
+
+const DAILY_COINS = 1000;
+const MINING_CHANCES = 3;
+const STEAL_CHANCES = 2;
+const AVENGE_CHANCES = 1;
+const LEND_CHANCES = 2;
+const DONATE_CHANCES = 3;
+const CASINO_CHANCES = 5;
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 
 export async function handleEconomyCommand(
     sock: any,
@@ -177,7 +189,10 @@ export async function handleEconomyCommand(
     command: string,
     args: string[]
 ) {
+<<<<<<< HEAD
     console.log('Iniciando handleEconomyCommand:', { command, args });
+=======
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     const groupId = message.key.remoteJid;
     if (!groupId.endsWith('@g.us')) {
         await sock.sendMessage(groupId, { text: 'Este comando só pode ser usado em grupos!' });
@@ -185,6 +200,7 @@ export async function handleEconomyCommand(
     }
 
     const sender = message.key.participant || message.key.remoteJid;
+<<<<<<< HEAD
     console.log('Dados do comando:', { groupId, sender });
 
     // Verifica cooldown do sniper antes de processar comandos
@@ -225,6 +241,14 @@ export async function handleEconomyCommand(
             await sock.sendMessage(groupId, { text: 'Grupo criado com sucesso!' });
             await db.setGameActive(groupId, true);
             await sock.sendMessage(groupId, { text: '🎮 O jogo CbCoin foi aberto! Use !menucbcoin para ver os comandos disponíveis.' });
+=======
+
+    // Comandos de controle do jogo
+    if (command.toLowerCase() === '!abrirjogo') {
+        const group = await db.getGroup(groupId);
+        if (!group) {
+            await sock.sendMessage(groupId, { text: 'Grupo não encontrado!' });
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
             return;
         }
 
@@ -235,7 +259,11 @@ export async function handleEconomyCommand(
         }
 
         await db.setGameActive(groupId, true);
+<<<<<<< HEAD
         await sock.sendMessage(groupId, { text: '🎮 O jogo CbCoin foi aberto! Use !menucbcoin para ver os comandos disponíveis.' });
+=======
+        await sock.sendMessage(groupId, { text: '🎮 O jogo CbCoin foi aberto! Use !menu para ver os comandos disponíveis.' });
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         return;
     }
 
@@ -257,6 +285,7 @@ export async function handleEconomyCommand(
         return;
     }
 
+<<<<<<< HEAD
     // Verifica se é um comando do jogo
     if (isCbCoinCommand(command)) {
         console.log('Comando CbCoin válido:', command);
@@ -374,6 +403,76 @@ async function showMainMenu(sock: any, groupId: string) {
 !helpcbcoin - Informações sobre o CbCoin`;
 
     await sock.sendMessage(groupId, { text });
+=======
+    // Verifica se o jogo está ativo para outros comandos
+    const isGameActive = await db.isGameActive(groupId);
+    if (!isGameActive) {
+        await sock.sendMessage(groupId, { text: '🎮 O jogo CbCoin está fechado! Use !abrirjogo para começar a jogar.' });
+        return;
+    }
+
+    let userEconomy = await db.getUserEconomy(groupId, sender);
+
+    if (!userEconomy) {
+        userEconomy = {
+            coins: 0,
+            last_daily: 0,
+            mining_chances: MINING_CHANCES,
+            steal_chances: STEAL_CHANCES,
+            avenge_chances: AVENGE_CHANCES,
+            lend_chances: LEND_CHANCES,
+            donate_chances: DONATE_CHANCES,
+            casino_chances: CASINO_CHANCES,
+            shield: false,
+            lucky_charm: false
+        };
+        await db.createUserEconomy(groupId, sender, userEconomy);
+    }
+
+    switch (command.toLowerCase()) {
+        case '!menucbcoin':
+            await showCbCoinMenu(sock, groupId);
+            break;
+        case '!menu':
+            await showEconomyMenu(sock, groupId);
+            break;
+        case '!diario':
+            await handleDaily(sock, groupId, sender, userEconomy);
+            break;
+        case '!minerar':
+            await handleMining(sock, groupId, sender, userEconomy);
+            break;
+        case '!roubar':
+            await handleSteal(sock, groupId, sender, userEconomy, args[0]);
+            break;
+        case '!vingar':
+            await handleAvenge(sock, groupId, sender, userEconomy, args[0]);
+            break;
+        case '!emprestar':
+            await handleLend(sock, groupId, sender, userEconomy, args[0], args[1]);
+            break;
+        case '!doar':
+            await handleDonate(sock, groupId, sender, userEconomy, args[0], args[1]);
+            break;
+        case '!casino':
+            await handleCasino(sock, groupId, sender, userEconomy, args[0]);
+            break;
+        case '!escudo':
+            await handleShield(sock, groupId, sender, userEconomy);
+            break;
+        case '!amuletosorte':
+            await handleLuckyCharm(sock, groupId, sender, userEconomy);
+            break;
+        case '!ranking':
+            await handleRanking(sock, groupId);
+            break;
+        case '!perfil':
+            await handleProfile(sock, groupId, sender, userEconomy);
+            break;
+        default:
+            await showEconomyMenu(sock, groupId);
+    }
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 }
 
 async function handleDaily(sock: any, groupId: string, sender: string, userEconomy: UserEconomy) {
@@ -385,8 +484,12 @@ async function handleDaily(sock: any, groupId: string, sender: string, userEcono
         const timeLeft = oneDay - (now - lastDaily);
         const hoursLeft = Math.ceil(timeLeft / (60 * 60 * 1000));
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: `@${sender.split('@')[0]}, você precisa esperar ${hoursLeft} horas para receber sua recompensa diária novamente!`,
             mentions: [sender]
+=======
+            text: `Você precisa esperar ${hoursLeft} horas para receber sua recompensa diária novamente!`
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
@@ -403,16 +506,24 @@ async function handleDaily(sock: any, groupId: string, sender: string, userEcono
     await db.updateUserEconomy(groupId, sender, userEconomy);
 
     await sock.sendMessage(groupId, {
+<<<<<<< HEAD
         text: `@${sender.split('@')[0]} recebeu ${DAILY_COINS} CbCoins como recompensa diária!\nSaldo atual: ${userEconomy.coins} CbCoins`,
         mentions: [sender]
+=======
+        text: `Você recebeu ${DAILY_COINS} CbCoins como sua recompensa diária!\nSeu saldo atual: ${userEconomy.coins} CbCoins`
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     });
 }
 
 async function handleMining(sock: any, groupId: string, sender: string, userEconomy: UserEconomy) {
     if (userEconomy.mining_chances <= 0) {
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: `@${sender.split('@')[0]}, você não tem mais chances de minerar hoje!`,
             mentions: [sender]
+=======
+            text: 'Você não tem mais chances de minerar hoje!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
@@ -429,15 +540,21 @@ async function handleMining(sock: any, groupId: string, sender: string, userEcon
 
     await sock.sendMessage(groupId, {
         text: success
+<<<<<<< HEAD
             ? `@${sender.split('@')[0]} minerou com sucesso e ganhou ${coins} CbCoins!\nChances restantes: ${userEconomy.mining_chances}`
             : `@${sender.split('@')[0]} falhou na mineração!\nChances restantes: ${userEconomy.mining_chances}`,
         mentions: [sender]
+=======
+            ? `Mineragem bem sucedida! Você ganhou ${coins} CbCoins!\nChances restantes: ${userEconomy.mining_chances}`
+            : `Mineragem falhou! Tente novamente!\nChances restantes: ${userEconomy.mining_chances}`
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     });
 }
 
 async function handleSteal(sock: any, groupId: string, sender: string, userEconomy: UserEconomy, target: string) {
     if (!target) {
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: `@${sender.split('@')[0]}, mencione o usuário que você quer roubar!`,
             mentions: [sender]
         });
@@ -451,6 +568,9 @@ async function handleSteal(sock: any, groupId: string, sender: string, userEcono
         await sock.sendMessage(groupId, {
             text: `@${sender.split('@')[0]}, você não pode roubar de si mesmo!`,
             mentions: [sender]
+=======
+            text: 'Mencione o usuário que você quer roubar!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
@@ -474,8 +594,12 @@ async function handleSteal(sock: any, groupId: string, sender: string, userEcono
         userEconomy.steal_chances--;
         await db.updateUserEconomy(groupId, sender, userEconomy);
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: 'O usuário está protegido por um escudo!',
             mentions: [target]
+=======
+            text: 'O usuário está protegido por um escudo!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
@@ -494,9 +618,14 @@ async function handleSteal(sock: any, groupId: string, sender: string, userEcono
 
     await sock.sendMessage(groupId, {
         text: success
+<<<<<<< HEAD
             ? `@${sender.split('@')[0]} roubou ${coins} CbCoins de @${target.split('@')[0]}!\nChances restantes: ${userEconomy.steal_chances}`
             : `@${sender.split('@')[0]} tentou roubar @${target.split('@')[0]} mas falhou!\nChances restantes: ${userEconomy.steal_chances}`,
         mentions: [sender, target]
+=======
+            ? `Roubo bem sucedido! Você roubou ${coins} CbCoins!\nChances restantes: ${userEconomy.steal_chances}`
+            : `Roubo falhou! Tente novamente!\nChances restantes: ${userEconomy.steal_chances}`
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     });
 }
 
@@ -508,6 +637,7 @@ async function handleAvenge(sock: any, groupId: string, sender: string, userEcon
         return;
     }
 
+<<<<<<< HEAD
     // Limpa o JID se necessário
     target = target.split('@')[0] + '@s.whatsapp.net';
 
@@ -518,6 +648,8 @@ async function handleAvenge(sock: any, groupId: string, sender: string, userEcon
         return;
     }
 
+=======
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     if (userEconomy.avenge_chances <= 0) {
         await sock.sendMessage(groupId, {
             text: 'Você não tem mais chances de se vingar hoje!'
@@ -547,21 +679,31 @@ async function handleAvenge(sock: any, groupId: string, sender: string, userEcon
 
     await sock.sendMessage(groupId, {
         text: success
+<<<<<<< HEAD
             ? `Vingança bem sucedida! Você roubou ${coins} CbCoins de @${target.split('@')[0]}!\nChances restantes: ${userEconomy.avenge_chances}`
             : `Vingança falhou! Tente novamente!\nChances restantes: ${userEconomy.avenge_chances}`,
         mentions: [target]
+=======
+            ? `Vingança bem sucedida! Você roubou ${coins} CbCoins!\nChances restantes: ${userEconomy.avenge_chances}`
+            : `Vingança falhou! Tente novamente!\nChances restantes: ${userEconomy.avenge_chances}`
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     });
 }
 
 async function handleLend(sock: any, groupId: string, sender: string, userEconomy: UserEconomy, target: string, amount: string) {
     if (!target || !amount) {
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: `@${sender.split('@')[0]}, use: !emprestar @usuario [quantidade]`,
             mentions: [sender]
+=======
+            text: 'Mencione o usuário e a quantidade que você quer emprestar!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
 
+<<<<<<< HEAD
     // Limpa o JID se necessário
     target = target.split('@')[0] + '@s.whatsapp.net';
 
@@ -569,6 +711,11 @@ async function handleLend(sock: any, groupId: string, sender: string, userEconom
         await sock.sendMessage(groupId, {
             text: `@${sender.split('@')[0]}, você não pode emprestar para si mesmo!`,
             mentions: [sender]
+=======
+    if (userEconomy.lend_chances <= 0) {
+        await sock.sendMessage(groupId, {
+            text: 'Você não tem mais chances de emprestar hoje!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
@@ -576,20 +723,31 @@ async function handleLend(sock: any, groupId: string, sender: string, userEconom
     const coins = parseInt(amount);
     if (isNaN(coins) || coins <= 0) {
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: `@${sender.split('@')[0]}, valor inválido!`,
             mentions: [sender]
+=======
+            text: 'Quantidade inválida!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
 
+<<<<<<< HEAD
     if (coins > userEconomy.coins) {
         await sock.sendMessage(groupId, {
             text: `@${sender.split('@')[0]}, você não tem CbCoins suficientes!\nSeu saldo: ${userEconomy.coins.toLocaleString('pt-BR')} CbCoins`,
             mentions: [sender]
+=======
+    if (userEconomy.coins < coins) {
+        await sock.sendMessage(groupId, {
+            text: 'Você não tem CbCoins suficientes!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
 
+<<<<<<< HEAD
     // Atualiza os saldos
     userEconomy.coins -= coins;
     await db.updateUserEconomy(groupId, sender, userEconomy);
@@ -616,18 +774,42 @@ async function handleLend(sock: any, groupId: string, sender: string, userEconom
     await sock.sendMessage(groupId, {
         text: `💸 @${sender.split('@')[0]} emprestou ${coins.toLocaleString('pt-BR')} CbCoins para @${target.split('@')[0]}!\nSaldo de @${sender.split('@')[0]}: ${userEconomy.coins.toLocaleString('pt-BR')} CbCoins`,
         mentions: [sender, target]
+=======
+    const targetEconomy = await db.getUserEconomy(groupId, target);
+    if (!targetEconomy) {
+        await sock.sendMessage(groupId, {
+            text: 'Usuário não encontrado!'
+        });
+        return;
+    }
+
+    userEconomy.lend_chances--;
+    userEconomy.coins -= coins;
+    targetEconomy.coins += coins;
+
+    await db.updateUserEconomy(groupId, sender, userEconomy);
+    await db.updateUserEconomy(groupId, target, targetEconomy);
+
+    await sock.sendMessage(groupId, {
+        text: `Você emprestou ${coins} CbCoins para ${target}!\nChances restantes: ${userEconomy.lend_chances}`
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     });
 }
 
 async function handleDonate(sock: any, groupId: string, sender: string, userEconomy: UserEconomy, target: string, amount: string) {
     if (!target || !amount) {
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: `@${sender.split('@')[0]}, use: !doar @usuario [quantidade]`,
             mentions: [sender]
+=======
+            text: 'Mencione o usuário e a quantidade que você quer doar!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
 
+<<<<<<< HEAD
     // Limpa o JID se necessário
     target = target.split('@')[0] + '@s.whatsapp.net';
 
@@ -635,6 +817,11 @@ async function handleDonate(sock: any, groupId: string, sender: string, userEcon
         await sock.sendMessage(groupId, {
             text: `@${sender.split('@')[0]}, você não pode doar para si mesmo!`,
             mentions: [sender]
+=======
+    if (userEconomy.donate_chances <= 0) {
+        await sock.sendMessage(groupId, {
+            text: 'Você não tem mais chances de doar hoje!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
@@ -642,20 +829,31 @@ async function handleDonate(sock: any, groupId: string, sender: string, userEcon
     const coins = parseInt(amount);
     if (isNaN(coins) || coins <= 0) {
         await sock.sendMessage(groupId, {
+<<<<<<< HEAD
             text: `@${sender.split('@')[0]}, valor inválido!`,
             mentions: [sender]
+=======
+            text: 'Quantidade inválida!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
 
+<<<<<<< HEAD
     if (coins > userEconomy.coins) {
         await sock.sendMessage(groupId, {
             text: `@${sender.split('@')[0]}, você não tem CbCoins suficientes!\nSeu saldo: ${userEconomy.coins.toLocaleString('pt-BR')} CbCoins`,
             mentions: [sender]
+=======
+    if (userEconomy.coins < coins) {
+        await sock.sendMessage(groupId, {
+            text: 'Você não tem CbCoins suficientes!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
 
+<<<<<<< HEAD
     // Atualiza os saldos
     userEconomy.coins -= coins;
     await db.updateUserEconomy(groupId, sender, userEconomy);
@@ -776,23 +974,115 @@ async function handleShield(sock: any, groupId: string, sender: string, userEcon
     if (userEconomy.shield) {
         await sock.sendMessage(groupId, {
             text: '❌ Você já possui um escudo ativo!'
+=======
+    const targetEconomy = await db.getUserEconomy(groupId, target);
+    if (!targetEconomy) {
+        await sock.sendMessage(groupId, {
+            text: 'Usuário não encontrado!'
         });
         return;
     }
 
+    userEconomy.donate_chances--;
+    userEconomy.coins -= coins;
+    targetEconomy.coins += coins;
+
+    await db.updateUserEconomy(groupId, sender, userEconomy);
+    await db.updateUserEconomy(groupId, target, targetEconomy);
+
+    await sock.sendMessage(groupId, {
+        text: `Você doou ${coins} CbCoins para ${target}!\nChances restantes: ${userEconomy.donate_chances}`
+    });
+}
+
+async function handleCasino(sock: any, groupId: string, sender: string, userEconomy: UserEconomy, bet: string) {
+    if (!bet) {
+        await sock.sendMessage(groupId, {
+            text: 'Digite a quantidade que você quer apostar!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
+        });
+        return;
+    }
+
+<<<<<<< HEAD
     if (userEconomy.coins < price) {
         await sock.sendMessage(groupId, {
             text: `❌ Você precisa de ${price} CbCoins para comprar um escudo!\nSeu saldo: ${userEconomy.coins} CbCoins`
+=======
+    if (userEconomy.casino_chances <= 0) {
+        await sock.sendMessage(groupId, {
+            text: 'Você não tem mais chances de jogar no casino hoje!'
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         });
         return;
     }
 
+<<<<<<< HEAD
     userEconomy.coins -= price;
     userEconomy.shield = true;
     await db.updateUserEconomy(groupId, sender, userEconomy);
 
     await sock.sendMessage(groupId, {
         text: `✅ Você comprou um escudo por ${price} CbCoins!\nSeu saldo atual: ${userEconomy.coins} CbCoins`
+=======
+    const coins = parseInt(bet);
+    if (isNaN(coins) || coins <= 0) {
+        await sock.sendMessage(groupId, {
+            text: 'Quantidade inválida!'
+        });
+        return;
+    }
+
+    if (userEconomy.coins < coins) {
+        await sock.sendMessage(groupId, {
+            text: 'Você não tem CbCoins suficientes!'
+        });
+        return;
+    }
+
+    const success = getRandomNumber(1, 100) <= 40;
+    const multiplier = success ? getRandomNumber(1, 3) : 0;
+
+    userEconomy.casino_chances--;
+    if (success) {
+        userEconomy.coins += coins * multiplier;
+    } else {
+        userEconomy.coins -= coins;
+    }
+
+    await db.updateUserEconomy(groupId, sender, userEconomy);
+
+    await sock.sendMessage(groupId, {
+        text: success
+            ? `Você ganhou ${coins * multiplier} CbCoins! (${multiplier}x)\nChances restantes: ${userEconomy.casino_chances}`
+            : `Você perdeu ${coins} CbCoins!\nChances restantes: ${userEconomy.casino_chances}`
+    });
+}
+
+async function handleShield(sock: any, groupId: string, sender: string, userEconomy: UserEconomy) {
+    if (userEconomy.shield) {
+        await sock.sendMessage(groupId, {
+            text: 'Você já está protegido por um escudo!'
+        });
+        return;
+    }
+
+    const shieldCost = 5000;
+    if (userEconomy.coins < shieldCost) {
+        await sock.sendMessage(groupId, {
+            text: `Você precisa de ${shieldCost} CbCoins para comprar um escudo!`
+        });
+        return;
+    }
+
+    userEconomy.coins -= shieldCost;
+    userEconomy.shield = true;
+
+    await db.updateUserEconomy(groupId, sender, userEconomy);
+
+    await sock.sendMessage(groupId, {
+        text: `Você comprou um escudo por ${shieldCost} CbCoins!\nAgora você está protegido contra roubos!`
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     });
 }
 
@@ -804,7 +1094,11 @@ async function handleLuckyCharm(sock: any, groupId: string, sender: string, user
         return;
     }
 
+<<<<<<< HEAD
     const charmCost = LUCKY_CHARM_PRICE;
+=======
+    const charmCost = 3000;
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     if (userEconomy.coins < charmCost) {
         await sock.sendMessage(groupId, {
             text: `Você precisa de ${charmCost} CbCoins para comprar um amuleto da sorte!`
@@ -824,6 +1118,7 @@ async function handleLuckyCharm(sock: any, groupId: string, sender: string, user
 
 async function handleRanking(sock: any, groupId: string) {
     const ranking = await db.getGroupEconomyRanking(groupId);
+<<<<<<< HEAD
     const mentions = ranking.map(user => user.user_id);
 
     let text = `╭━━━━━━━━━━━━━━━━╮
@@ -893,10 +1188,20 @@ CbCoin é a moeda oficial do Calabouço! Com ela, você pode participar de vári
 
 Use !menucbcoin para ver todos os comandos disponíveis!`;
 
+=======
+
+    let text = '*🏆 Ranking de CbCoins 🏆*\n\n';
+    for (let i = 0; i < ranking.length; i++) {
+        const user = ranking[i];
+        text += `${i + 1}. @${user.user_id.split('@')[0]}: ${user.coins} CbCoins\n`;
+    }
+
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     await sock.sendMessage(groupId, { text });
 }
 
 async function showCbCoinMenu(sock: any, groupId: string) {
+<<<<<<< HEAD
     const text = `🎮 *Menu CbCoin* 🎮
 
 *💰 Comandos de Economia:*
@@ -934,6 +1239,85 @@ async function showCbCoinMenu(sock: any, groupId: string) {
 • O escudo protege contra roubos e sniper
 • O amuleto aumenta chances de sucesso
 • Seja ativo para ganhar mais CbCoins`;
+=======
+    const text = `*🎮 SISTEMA CBCOIN 🎮*
+
+*Como Jogar:*
+1. Use !abrirjogo para iniciar o jogo (apenas admins)
+2. Todos os membros podem participar
+3. Use !perfil para ver suas informações
+4. Use !ranking para ver o top 10 mais ricos
+
+*💰 Comandos Básicos:*
+!diario - Receba 1000 CbCoins por dia
+!minerar - Tente minerar CbCoins (70% de sucesso)
+!roubar @usuario - Tente roubar 10% dos CbCoins de alguém (30% de sucesso)
+!vingar @usuario - Tente se vingar e roubar 20% dos CbCoins (50% de sucesso)
+!emprestar @usuario [quantidade] - Empreste CbCoins para alguém
+!doar @usuario [quantidade] - Doe CbCoins para alguém
+!casino [aposta] - Jogue no casino (40% de sucesso, multiplicador 1x-3x)
+
+*🎯 Chances Diárias:*
+⛏️ Minerar: 3x chances
+🦹 Roubar: 2x chances
+⚔️ Vingar: 1x chance
+💸 Emprestar: 2x chances
+🎁 Doar: 3x chances
+🎲 Casino: 5x chances
+
+*🛡️ Itens de Proteção:*
+!escudo - Custa 5000 CbCoins
+• Protege contra roubos
+• Dura até ser desativado
+
+*🍀 Itens de Sorte:*
+!amuletosorte - Custa 3000 CbCoins
+• Aumenta chances de sucesso
+• Dura até ser desativado
+
+*📊 Informações:*
+• Cada grupo tem seu próprio sistema
+• As chances são resetadas diariamente
+• Use !perfil para ver suas informações
+• Use !ranking para ver os mais ricos
+
+*⚠️ Dicas:*
+• Colete sua recompensa diária primeiro
+• Use o escudo para se proteger de roubos
+• Use o amuleto da sorte para aumentar chances
+• Jogue no casino com moderação
+• Ajude outros jogadores com doações
+
+*🎮 Comandos de Controle:*
+!abrirjogo - Abre o jogo (apenas admins)
+!fecharjogo - Fecha o jogo (apenas admins)
+!menucbcoin - Mostra este menu
+!menu - Menu simplificado
+!perfil - Mostra suas informações
+!ranking - Mostra o top 10 mais ricos`;
+
+    await sock.sendMessage(groupId, { text });
+}
+
+async function showEconomyMenu(sock: any, groupId: string) {
+    const text = `*🎮 Menu Rápido CbCoin 🎮*
+
+*Comandos:*
+!diario - Receba 1000 CbCoins
+!minerar - Minerar CbCoins
+!roubar @usuario - Roubar CbCoins
+!vingar @usuario - Se vingar
+!emprestar @usuario [qtd] - Emprestar
+!doar @usuario [qtd] - Doar
+!casino [aposta] - Jogar no casino
+!escudo - Comprar escudo
+!amuletosorte - Comprar amuleto
+!perfil - Ver suas informações
+!ranking - Ver ranking
+!menucbcoin - Menu completo
+
+Use !menucbcoin para ver o menu completo com todas as informações!`;
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 
     await sock.sendMessage(groupId, { text });
 }
@@ -945,6 +1329,7 @@ async function handleProfile(sock: any, groupId: string, sender: string, userEco
         return;
     }
 
+<<<<<<< HEAD
     const text = `🎮 *Perfil do Jogador*\n
 👤 Jogador: @${sender.split('@')[0]}
 💰 CbCoins: ${userEconomy.coins.toLocaleString('pt-BR')}
@@ -1059,4 +1444,20 @@ async function handleLucky(sock: any, groupId: string, sender: string, userEcono
         text: `🍀 @${sender.split('@')[0]} usou o comando sortudo e ganhou ${LUCKY_PRIZE.toLocaleString('pt-BR')} CbCoins!\n\n🎯 Membro sorteado: @${luckyMember.split('@')[0]}\n\nSaldo atual: ${userEconomy.coins.toLocaleString('pt-BR')} CbCoins`,
         mentions: [sender, luckyMember]
     });
+=======
+    const text = `*👤 Perfil de ${user.user_name}*
+
+💰 CbCoins: ${userEconomy.coins}
+🎁 Recompensa Diária: ${userEconomy.last_daily ? 'Já coletada' : 'Disponível'}
+⛏️ Chances de Minerar: ${userEconomy.mining_chances}/${MINING_CHANCES}
+🦹 Chances de Roubar: ${userEconomy.steal_chances}/${STEAL_CHANCES}
+⚔️ Chances de Vingar: ${userEconomy.avenge_chances}/${AVENGE_CHANCES}
+💸 Chances de Emprestar: ${userEconomy.lend_chances}/${LEND_CHANCES}
+🎁 Chances de Doar: ${userEconomy.donate_chances}/${DONATE_CHANCES}
+🎲 Chances no Casino: ${userEconomy.casino_chances}/${CASINO_CHANCES}
+🛡️ Escudo: ${userEconomy.shield ? 'Ativo' : 'Inativo'}
+🍀 Amuleto da Sorte: ${userEconomy.lucky_charm ? 'Ativo' : 'Inativo'}`;
+
+    await sock.sendMessage(groupId, { text });
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 } 

@@ -11,21 +11,36 @@
 	"dependencies": {
 		"@nuintun/qrcode": "4.1.2",
 		"@whiskeysockets/baileys": "^6.7.13",
+<<<<<<< HEAD
 		"dotenv": "^16.4.7",
 		"fs": "^0.0.1-security",
 		"google-tts-api": "2.0.2",
 		"mongodb": "^6.14.1",
 		"mongoose": "^8.12.0",
+=======
+		"dotenv": "16.4.7",
+		"fs": "^0.0.1-security",
+		"google-tts-api": "2.0.2",
+		"mongodb": "^6.3.0",
+		"mongoose": "^8.1.0",
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 		"p-queue": "8.1.0",
 		"pino": "^8.0.0",
 		"pino-pretty": "^13.0.0",
 		"qrcode-terminal": "0.12.0",
+<<<<<<< HEAD
 		"request": "^2.88.2",
+=======
+		"request": "2.88.2",
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 		"uuid": "11.0.5"
 	},
 	"devDependencies": {
 		"@types/dotenv": "^6.1.1",
+<<<<<<< HEAD
 		"@types/mongodb": "^4.0.6",
+=======
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 		"@types/mongoose": "^5.11.96",
 		"@types/node": "^20.11.24",
 		"@types/p-queue": "^3.2.1",

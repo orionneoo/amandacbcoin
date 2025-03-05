@@ -28,8 +28,12 @@ export const CONFIG = {
         MAX_MESSAGES: 10,
         TIME_WINDOW: 60000,
         RATE_LIMIT_DELAY: 30000
+<<<<<<< HEAD
     },
     MONGODB_URI: process.env.MONGODB_URI || 'mongodb+srv://[sua_string_conexao]',
+=======
+    }
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 };
 
 export function isAmandaActivated(messageData: MessageData): boolean {

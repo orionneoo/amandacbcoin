@@ -433,12 +433,20 @@ async function showUserInfo(sock: WASocket, messageData: MessageData, args: stri
         type: 'punishment'
     });
 
+<<<<<<< HEAD
     let userText = `👤 *Informações do Usuário*\n\n`;
     userText += `🆔 ID: ${targetUser}\n`;
     userText += `👤 Nome: ${userInfo?.user_name || 'Não encontrado'}\n`;
     userText += `📅 Última mensagem: ${userInfo?.last_message ? new Date(userInfo.last_message).toLocaleDateString() : 'Não encontrado'}\n`;
     userText += `💬 Total de mensagens: ${userInfo?.message_count || 0}\n`;
     userText += `👑 Admin: ${userInfo?.is_admin ? 'Sim' : 'Não'}\n`;
+=======
+    let userText = `*📊 Informações do Usuário*\n\n`;
+    userText += `👤 Nome: ${userInfo?.user_name || 'Não encontrado'}\n`;
+    userText += `📱 Número: ${targetUser.split('@')[0]}\n`;
+    userText += `📅 Entrou em: ${userInfo?.joined_at ? new Date(userInfo.joined_at).toLocaleDateString() : 'Não encontrado'}\n`;
+    userText += `💬 Total de mensagens: ${userInfo?.total_messages || 0}\n`;
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     userText += `⚠️ Total de avisos: ${warnings.length}\n`;
     userText += `⚡ Total de punições: ${punishments.length}\n\n`;
 
@@ -541,7 +549,11 @@ const helpText = `*🤖 Comandos da Amanda*
 !registrar @usuario [tipo] [motivo] - Registra uma punição
 !avisar @usuario [motivo] - Dá um aviso ao usuário
 !banir @usuario [motivo] - Bane o usuário do grupo
+<<<<<<< HEAD
 !expulsar @usuario [motivo] - Expulsar usuário do grupo
+=======
+!expulsar @usuario [motivo] - Expulsa o usuário do grupo
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 !mutar @usuario [tempo] [motivo] - Muta o usuário por um tempo
 !desmutar @usuario - Remove o mute do usuário
 !avisos @usuario - Mostra os avisos do usuário

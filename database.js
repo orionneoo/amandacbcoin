@@ -81,7 +81,11 @@ var DatabaseManager = /** @class */ (function () {
     };
     DatabaseManager.prototype.initializeTables = function () {
         // Tabela de grupos
+<<<<<<< HEAD
         this.db.run("\n            CREATE TABLE IF NOT EXISTS groups (\n                id TEXT PRIMARY KEY,\n                name TEXT,\n                member_count INTEGER DEFAULT 0,\n                admins TEXT,\n                total_messages INTEGER DEFAULT 0,\n                active BOOLEAN DEFAULT true,\n                game_active BOOLEAN DEFAULT false,\n                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                last_interaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n            )\n        ");
+=======
+        this.db.run("\n            CREATE TABLE IF NOT EXISTS groups (\n                id TEXT PRIMARY KEY,\n                name TEXT,\n                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                last_interaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                total_messages INTEGER DEFAULT 0,\n                active BOOLEAN DEFAULT true,\n                member_count INTEGER DEFAULT 0,\n                admins TEXT,\n                game_active BOOLEAN DEFAULT false\n            )\n        ");
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         // Nova tabela para usuários e seus grupos
         this.db.run("\n            CREATE TABLE IF NOT EXISTS user_groups (\n                user_id TEXT,\n                group_id TEXT,\n                group_name TEXT,\n                user_name TEXT,\n                name_captured TEXT,\n                phone_number TEXT,\n                total_messages INTEGER DEFAULT 0,\n                joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                last_interaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                is_admin BOOLEAN DEFAULT false,\n                PRIMARY KEY (user_id, group_id),\n                FOREIGN KEY (group_id) REFERENCES groups(id)\n            )\n        ");
         // Tabela de mensagens
@@ -115,6 +119,7 @@ var DatabaseManager = /** @class */ (function () {
             if (memberCount === void 0) { memberCount = 0; }
             if (admins === void 0) { admins = []; }
             return __generator(this, function (_a) {
+<<<<<<< HEAD
                 console.log('Criando novo grupo:', { id, name, memberCount, admins });
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                     _this.db.run(`
@@ -140,6 +145,16 @@ var DatabaseManager = /** @class */ (function () {
                             }
                         });
                 })];
+=======
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.db.run('INSERT OR IGNORE INTO groups (id, name, member_count, admins) VALUES (?, ?, ?, ?)', [id, name, memberCount, JSON.stringify(admins)], function (err) {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve();
+                        });
+                    })];
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
             });
         });
     };
@@ -600,6 +615,7 @@ var DatabaseManager = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve, reject) {
+<<<<<<< HEAD
                     _this.db.all(`
                         SELECT 
                             e.*,
@@ -619,6 +635,22 @@ var DatabaseManager = /** @class */ (function () {
                             resolve(rows);
                     });
                 })];
+=======
+                        _this.db.all(`
+                            SELECT e.*, ug.user_name
+                            FROM economy e
+                            JOIN user_groups ug ON e.user_id = ug.user_id AND e.group_id = ug.group_id
+                            WHERE e.group_id = ?
+                            ORDER BY e.coins DESC
+                            LIMIT 10
+                        `, [groupId], function (err, rows) {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(rows);
+                        });
+                    })];
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
             });
         });
     };
@@ -626,6 +658,7 @@ var DatabaseManager = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
+<<<<<<< HEAD
                 console.log('Alterando status do jogo:', { groupId, isActive });
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                     _this.db.run('UPDATE groups SET game_active = ?, last_interaction = CURRENT_TIMESTAMP WHERE id = ?', [isActive, groupId], function (err) {
@@ -638,6 +671,16 @@ var DatabaseManager = /** @class */ (function () {
                         }
                     });
                 })];
+=======
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.db.run('UPDATE groups SET game_active = ? WHERE id = ?', [isActive, groupId], function (err) {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve();
+                        });
+                    })];
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
             });
         });
     };
@@ -645,6 +688,7 @@ var DatabaseManager = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
+<<<<<<< HEAD
                 console.log('Verificando status do jogo para o grupo:', groupId);
                 return [2 /*return*/, new Promise(function (resolve, reject) {
                     _this.db.get('SELECT game_active FROM groups WHERE id = ?', [groupId], function (err, row) {
@@ -706,6 +750,16 @@ var DatabaseManager = /** @class */ (function () {
                         }
                     });
                 })];
+=======
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.db.get('SELECT game_active FROM groups WHERE id = ?', [groupId], function (err, row) {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(row ? row.game_active : false);
+                        });
+                    })];
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
             });
         });
     };

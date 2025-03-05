@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+<<<<<<< HEAD
 import { Group, UserGroup, Message, Settings, Economy } from './models/schemas';
 import { IGroup, IUserGroup, IMessage, ISettings } from './models/schemas';
 import { ObjectId } from 'mongodb';
@@ -8,6 +9,12 @@ import path from 'path';
 
 // Carrega as variáveis de ambiente
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
+=======
+import { Group, UserGroup, Message, Settings } from './models/schemas';
+import { IGroup, IUserGroup, IMessage, ISettings } from './models/schemas';
+import { ObjectId } from 'mongodb';
+import { Db, Collection } from 'mongodb';
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 
 interface GroupData {
     id: string;
@@ -17,18 +24,31 @@ interface GroupData {
     total_messages: number;
     active: boolean;
     member_count: number;
+<<<<<<< HEAD
     admins: string[];
     game_active: boolean;
+=======
+    admins: string;
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 }
 
 interface UserData {
     user_id: string;
     user_name: string;
     name_captured: string | null;
+<<<<<<< HEAD
     message_count: number;
     last_message: Date;
     group_id: string;
     total_messages: number;
+=======
+    phone_number: string;
+    group_id: string;
+    group_name: string;
+    total_messages: number;
+    joined_at: string;
+    last_interaction: string;
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     is_admin: boolean;
 }
 
@@ -75,6 +95,22 @@ interface ModAction {
     duration?: number;
 }
 
+<<<<<<< HEAD
+=======
+interface UserEconomy {
+    coins: number;
+    last_daily: number;
+    mining_chances: number;
+    steal_chances: number;
+    avenge_chances: number;
+    lend_chances: number;
+    donate_chances: number;
+    casino_chances: number;
+    shield: boolean;
+    lucky_charm: boolean;
+}
+
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 class DatabaseManager {
     private static instance: DatabaseManager;
     private isInitialized: boolean = false;
@@ -82,6 +118,7 @@ class DatabaseManager {
 
     private constructor() {
         this.mongooseConnection = mongoose;
+<<<<<<< HEAD
 
         // Verifica se já existe uma conexão
         if (mongoose.connection.readyState === 1) {
@@ -107,6 +144,8 @@ class DatabaseManager {
                 console.error('Erro detalhado:', err.message);
                 console.error('Erro ao conectar ao MongoDB:', err);
             });
+=======
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     }
 
     public static getInstance(): DatabaseManager {
@@ -227,10 +266,16 @@ class DatabaseManager {
 
         return {
             groups: userGroups.map(ug => ({
+<<<<<<< HEAD
                 group_id: ug.group_id,
                 user_name: ug.user_name,
                 message_count: ug.message_count,
                 last_message: ug.last_message
+=======
+                group_name: ug.group_name,
+                total_messages: ug.total_messages,
+                joined_at: ug.joined_at
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
             })),
             total_messages: messageCount
         };
@@ -441,6 +486,7 @@ class DatabaseManager {
 
     public async getUserEconomy(groupId: string, userId: string): Promise<UserEconomy | null> {
         await this.ensureInitialized();
+<<<<<<< HEAD
         const economy = await Economy.findOne({ user_id: userId, group_id: groupId });
         
         if (!economy) return null;
@@ -458,11 +504,27 @@ class DatabaseManager {
             lucky_charm: economy.lucky_charm,
             sniper_cooldown: economy.sniper_cooldown,
             lucky_cooldown: economy.lucky_cooldown
+=======
+        const user = await UserGroup.findOne({ user_id: userId, group_id: groupId });
+        if (!user) return null;
+        return {
+            coins: user.coins || 0,
+            last_daily: user.last_daily || 0,
+            mining_chances: user.mining_chances || 0,
+            steal_chances: user.steal_chances || 0,
+            avenge_chances: user.avenge_chances || 0,
+            lend_chances: user.lend_chances || 0,
+            donate_chances: user.donate_chances || 0,
+            casino_chances: user.casino_chances || 0,
+            shield: user.shield || false,
+            lucky_charm: user.lucky_charm || false
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         };
     }
 
     public async updateUserEconomy(groupId: string, userId: string, data: Partial<UserEconomy>): Promise<void> {
         await this.ensureInitialized();
+<<<<<<< HEAD
 
         // Busca informações atuais
         const group = await Group.findOne({ id: groupId });
@@ -478,11 +540,17 @@ class DatabaseManager {
                     user_name: userGroup?.user_name || userId.split('@')[0]
                 }
             }
+=======
+        await UserGroup.findOneAndUpdate(
+            { user_id: userId, group_id: groupId },
+            { $set: data }
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         );
     }
 
     public async createUserEconomy(groupId: string, userId: string, data: UserEconomy): Promise<void> {
         await this.ensureInitialized();
+<<<<<<< HEAD
         
         // Busca informações do grupo e usuário
         const group = await Group.findOne({ id: groupId });
@@ -501,12 +569,18 @@ class DatabaseManager {
         await Economy.findOneAndUpdate(
             { user_id: userId, group_id: groupId },
             { $set: economyData },
+=======
+        await UserGroup.findOneAndUpdate(
+            { user_id: userId, group_id: groupId },
+            { $set: data },
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
             { upsert: true }
         );
     }
 
     public async getGroupEconomyRanking(groupId: string): Promise<Array<{ user_id: string; coins: number }>> {
         await this.ensureInitialized();
+<<<<<<< HEAD
         const economies = await Economy.find({ group_id: groupId })
             .sort({ coins: -1 })
             .limit(10);
@@ -514,6 +588,14 @@ class DatabaseManager {
         return economies.map(economy => ({
             user_id: economy.user_id,
             coins: economy.coins
+=======
+        const users = await UserGroup.find({ group_id: groupId })
+            .sort({ coins: -1 })
+            .limit(10);
+        return users.map(user => ({
+            user_id: user.user_id,
+            coins: user.coins || 0
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         }));
     }
 

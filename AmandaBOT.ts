@@ -379,6 +379,7 @@ const sendToGeminiAPI = async (
                 },
                 (err, resp, body) => {
                     if (err || resp.statusCode !== 200) {
+<<<<<<< HEAD
                         const errorDetails = {
                             error: err ? err.message : 'Status code não é 200',
                             statusCode: resp?.statusCode,
@@ -386,18 +387,25 @@ const sendToGeminiAPI = async (
                         };
                         logger.error('Erro na requisição:', errorDetails);
                         
+=======
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
                         if (retryCount < CONFIG.MAX_RETRIES) {
                             logger.warning(`Tentativa ${retryCount + 1} falhou. Tentando novamente...`);
                             setTimeout(() => {
                                 resolve(sendToGeminiAPI(sysInstructions, sysConfigFile, message, history, retryCount + 1));
                             }, CONFIG.RETRY_DELAY);
                         } else {
+<<<<<<< HEAD
                             reject(new Error(`Falha após ${CONFIG.MAX_RETRIES} tentativas. Status: ${resp?.statusCode}, Erro: ${err?.message || JSON.stringify(body)}`));
+=======
+                            reject(new Error(`Falha após ${CONFIG.MAX_RETRIES} tentativas: ${err || body}`));
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
                         }
                         return;
                     }
 
                     try {
+<<<<<<< HEAD
                         // Adiciona logs para debug
                         logger.info(`Resposta da API Gemini: ${JSON.stringify(body)}`);
                         
@@ -422,6 +430,11 @@ const sendToGeminiAPI = async (
                             body: body,
                             statusCode: resp.statusCode
                         });
+=======
+                        const result = body.candidates[0].content.parts[0].text;
+                        resolve(result);
+                    } catch (ex) {
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
                         reject(new Error(`Erro ao processar resposta: ${ex.message}`));
                     }
                 }
@@ -681,6 +694,7 @@ async function handle(msg: WAMessage) {
         const text = extractText(msg);
         if (!text) return;
 
+<<<<<<< HEAD
         console.log('Mensagem recebida:', text);
 
         // Extrai menções da mensagem
@@ -693,6 +707,9 @@ async function handle(msg: WAMessage) {
         }
 
         console.log('Menções detectadas:', mentionedJids);
+=======
+        console.log('Processando mensagem:', text);
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 
         const messageData: MessageData = {
             body: text,
@@ -714,6 +731,7 @@ async function handle(msg: WAMessage) {
             } : undefined
         };
 
+<<<<<<< HEAD
         // Verifica se é um comando do CbCoin primeiro
         if (text.startsWith('!')) {
             console.log('Comando detectado:', text);
@@ -754,6 +772,9 @@ async function handle(msg: WAMessage) {
         }
 
         // Se não for um comando do CbCoin, processa como comando de moderação ou mensagem normal
+=======
+        // Verifica se é um comando de moderação
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
         if (text.startsWith(PREFIX)) {
             console.log('Comando de moderação detectado:', text);
             try {
@@ -774,6 +795,20 @@ async function handle(msg: WAMessage) {
             await handleFromPm(text, msg.key.remoteJid);
         }
 
+<<<<<<< HEAD
+=======
+        // Verifica se é um comando de economia
+        if (text.startsWith('!')) {
+            const command = text.slice(1).split(' ')[0];
+            const args = text.slice(1).split(' ').slice(1);
+
+            // Comandos de economia
+            if (['diario', 'minerar', 'roubar', 'vingar', 'emprestar', 'doar', 'casino', 'escudo', 'amuletosorte', 'ranking'].includes(command.toLowerCase())) {
+                await handleEconomyCommand(this_sock, msg, command, args);
+                return;
+            }
+        }
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
     } catch (error) {
         console.error('Erro ao processar mensagem:', error);
     }

@@ -7,6 +7,10 @@ import MAIN_LOGGER from '@whiskeysockets/baileys/lib/Utils/logger';
 import PQueue from 'p-queue';
 import AmandaBOT from './AmandaBOT';
 import pino from 'pino';
+<<<<<<< HEAD
+=======
+import { connectToMongoDB } from './config/mongodb';
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
 import { handleModerationCommand } from './commands/moderation';
 
 // Sistema de logging melhorado
@@ -295,4 +299,13 @@ const startSock = async () => {
 };
 
 // Inicializa o banco de dados MongoDB antes de iniciar o bot
+<<<<<<< HEAD
 startSock();
+=======
+connectToMongoDB().then(() => {
+    startSock();
+}).catch(error => {
+    console.error('Erro ao conectar ao MongoDB:', error);
+    process.exit(1);
+});
+>>>>>>> ff2530683e39c10cacf0f2adeefb6771459bca2b
